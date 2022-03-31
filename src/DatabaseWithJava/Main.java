@@ -11,13 +11,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-import static DatabaseWithJava.FileEdit.folderToList;
-
-//import static JavaConect2SQL.FileEdit.*;
-
 public class Main {
     public static void main(String[] args) {
 
+/*        System.out.println("Argument count: " + args.length);
+        for (int i = 0; i < args.length; i++) {
+            System.out.println("Argument " + i + ": " + args[i]);
+        }*/
 
         FileEdit fileEdit = new FileEdit();
 
@@ -94,6 +94,7 @@ public class Main {
 /*        allVersions.forEach(file ->fileWriter(String.valueOf(file)));*/
 
         fileEdit.sqlConnection("jdbc:postgresql://localhost:5432/crdmain","postgres","m9<FW~,$V0E!t&eWNHMV");
+//         fileEdit.sqlConnection("jdbc:mysql://localhost:3306/crdmain","root","M,sIQ;>Enz/vx&5O6J7)");
 
        /* try {
 //            Class.forName("com.mysql.jdbc.Driver"); //Use jdbc-Driver to make the connection

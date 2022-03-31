@@ -136,7 +136,7 @@ public class FileEdit {
     }
 
     public static List<File> folderToList(String fileLocation ,String lastVersion) {
-        List<File> files=new LinkedList<>();
+        List<File> files = new LinkedList<>();
         try {
             File test = new File(fileLocation);
             File[] paths = test.listFiles((dir, name) -> name.startsWith("migration_") && name.endsWith(".sql"));
@@ -153,50 +153,56 @@ public class FileEdit {
 
 
     //The Method connect with the database and give the last comment in crdmain as number
-    public static void sqlConnection(String url, String userName, String password) {
+    public static void sqlConnection(String url, String userName, String password) /*throws SQLException*/ {
+        Connection con;
         try {
-//       Class.forName("com.mysql.jdbc.Driver"); //Use jdbc-Driver to make the connection
-//            Class.forName("org.postgresql.Driver");
-            Connection con = DriverManager.getConnection(url, userName, password);
+/*          Class.forName("com.mysql.CJ.jdbc.Driver"); //Use jdbc-Driver to make the connection
+          Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("org.postgresql.odbc.Driver");
+            Class.forName("org.postgresql.Driver");*/
+            con = DriverManager.getConnection(url, userName, password);
             Statement stmt = con.createStatement();
+
             ResultSet rs = stmt.executeQuery("SELECT pg_catalog.shobj_description(d.oid, 'pg_database') AS \"Description\" FROM   pg_catalog.pg_database d WHERE  datname = 'crdmain';");
-            while(rs.next()) {
+            List<File> allVersions = null;
+            while (rs.next()) {
                 System.out.println(rs.getString(1));
-                List<File> allVersions = folderToList("F:\\Provadis-Hochschule\\1-Semester\\WAB\\Test\\", rs.getString(1));
-                allVersions.forEach(file ->System.out.println(file.getName()));
-                allVersions.forEach(file -> { try {
-                    BufferedReader brsad = new BufferedReader(new FileReader(file));
+                allVersions = folderToList("F:\\Provadis-Hochschule\\1-Semester\\WAB\\Test\\Neuer Ordner (2)", rs.getString(1));
+
+            }
+            allVersions.forEach(file -> System.out.println(file.getName()));
+            allVersions.forEach(file -> {
+                try{
+                    BufferedReader br = new BufferedReader(new FileReader(file));
                     String s;
                     String SQLCmd = "";
-                    while ((s = brsad.readLine()) != null) {
+                    while ((s = br.readLine()) != null) {
                         System.out.println(s);
                         SQLCmd += s + "\n";
                     }
-                    ResultSet rsds = stmt.executeQuery(SQLCmd);
-                    rsds.close();
-                    brsad.close();
+//                    ResultSet rsds = stmt.executeQuery(SQLCmd);
+//                    PreparedStatement esdqs = con.prepareStatement(SQLCmd);
+                    stmt.execute(SQLCmd);
+
                 } catch (SQLException throwables) {
                     System.out.println("fileReader Filed");
                     throwables.printStackTrace();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                });
-            }
-
+            });
 /*                List<File> allVersions = folderToList("F:\\Provadis-Hochschule\\1-Semester\\WAB\\Test\\",commentName);
                allVersions.forEach(file ->System.out.println(file.getName()));
             allVersions.forEach(file ->fileReader(String.valueOf(file)));*/
 
-            System.out.println("The connection is passed");
-            double startTime = System.nanoTime();
-            double endTime = System.nanoTime();
-            System.out.println("Execution Time in Seconds: " + ((endTime - startTime) / 1000000000));
-            con.close();
-        }
-        catch (Exception e) { //If the connection failed, the program show this message
+        System.out.println("The connection is passed");
+        double startTime = System.nanoTime();
+        double endTime = System.nanoTime();
+        System.out.println("Execution Time in Seconds: " + ((endTime - startTime) / 1000000000));
+        con.close();
+    } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) { //If the connection failed, the program show this message
             System.out.println("The connection with the database is failed");
             e.printStackTrace();
         }
